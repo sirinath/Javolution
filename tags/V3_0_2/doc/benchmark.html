@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Javolution - Benchmark Results (Microsoft Windows 2000 - Intel Pentium 4 - 2.26 GHz)</TITLE>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META NAME="keywords" CONTENT="Javolution, benchmark">
+<LINK REL ="stylesheet" TYPE="text/css" HREF="javadoc.css" TITLE="Style">
+</HEAD>
+<BODY><PRE>
+<B>D:\javolution-3.0>java -jar javolution.jar perf</B>
+Javolution - Java(TM) Solution for Real-Time and Embedded Systems
+Version 3.0.2 (J2SE 1.5+) February 21 2005 (http://javolution.org)
+
+Benchmark...
+
+////////////////////////////
+// Package: javolution.io //
+////////////////////////////
+
+//////////////////////////////
+// Package: javolution.lang //
+//////////////////////////////
+
+-- String/StringBuffer/StringBuilder versus Text/TextBuilder --
+"Concatenates this line one thousand times (resulting in a text of about 80,000 characters)."
+String "+" operator: 6074ms
+Text "plus": 14ms
+class java.lang.StringBuffer "append": 10ms
+class java.lang.StringBuilder "append": 9158µs
+class javolution.lang.TextBuilder "append": 14ms
+
+-- StringBuffer versus Text (insertion/deletion) --
+"Inserts this line into itself one thousand times. Then remove 80 characters at random location one thousand times"
+StringBuffer insert: 37ms
+StringBuffer delete: 20ms
+Text insert: 19ms
+Text delete: 36ms
+-- Using Preallocation Facility --
+Text "plus": <b>869µs</b>
+Text insert: 7448µs
+Text delete: 7885µs
+
+//////////////////////////////////
+// Package: javolution.realtime //
+//////////////////////////////////
+
+-- Heap versus Stack Allocation (Pool-Context) --
+Object heap creation: 57ns
+Object stack creation: 54ns
+char[128] heap creation: 2382ns
+char[128] stack creation: 133ns
+char[256] heap creation: 11µs
+char[256] stack creation: 152ns
+
+//////////////////////////////
+// Package: javolution.util //
+//////////////////////////////
+
+-- HashMap/LinkedMap versus FastMap --
+class java.util.HashMap
+    Populates/clears map of 200 entries: 36µs
+    Access (get): 57ns
+    Iterates through all map entries: 15µs
+class java.util.LinkedHashMap
+    Populates/clears map of 200 entries: 56µs
+    Access (get): 81ns
+    Iterates through all map entries: 9313ns
+class javolution.util.FastMap
+    Populates/clears map of 200 entries: 26µs
+    Access (get): 40ns
+    Iterates through all map entries: 8021ns
+    SIZE: 200, TABLE LENGTH: 256, AVG COLLISIONS: 29%, MAX SLOT OCCUPANCY: 5, KEY COMPARATOR: Default
+
+-- HashSet/LinkedHashSet/TreeSet versus FastSet --
+class java.util.HashSet
+    Populates/clears set of 200 elements: 37µs
+    Access (contains): 64ns
+    Iterates through all set elements: 15µs
+class java.util.LinkedHashSet
+    Populates/clears set of 200 elements: 54µs
+    Access (contains): 62ns
+    Iterates through all set elements: 9733ns
+class javolution.util.FastSet
+    Populates/clears set of 200 elements: 29µs
+    Access (contains): 47ns
+    Iterates through all set elements: 8390ns
+
+-- ArrayList/LinkedList versus FastList --
+class java.util.ArrayList
+    Populates/clears list of 200 elements: 13µs
+    Iterates through all list elements: 10µs
+class java.util.LinkedList
+    Populates/clears list of 200 elements: 22µs
+    Iterates through all list elements: 8503ns
+class javolution.util.FastList
+    Populates/clears list of 200 elements: 12µs
+    Iterates through all list elements: 8973ns
+
+/////////////////////////////
+// Package: javolution.xml //
+/////////////////////////////
+
+
+-- Java(TM) Serialization --
+Write Time: 74ms
+Read Time: 33ms
+
+-- XML Serialization (I/O Stream) --
+Write Time: 30ms
+Read Time: 55ms
+
+-- XML Serialization (NIO ByteBuffer) --
+Write Time: 26ms
+Read Time: 36ms
+
+More performance analysis in future versions...
+
+</PRE></BODY></HTML>
