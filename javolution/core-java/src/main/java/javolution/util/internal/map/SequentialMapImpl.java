@@ -10,44 +10,19 @@ package javolution.util.internal.map;
 
 import java.util.Iterator;
 
+import javolution.util.function.Consumer;
 import javolution.util.function.Equality;
 import javolution.util.service.MapService;
 
 /**
- *  * An unmodifiable view over a map.
+ * A sequential view over a map.
  */
-public class UnmodifiableMapImpl<K, V> extends MapView<K, V> {
-
-    /** Read-Only Iterator. */
-    private class IteratorImpl implements Iterator<Entry<K, V>> {
-        private final Iterator<Entry<K, V>> targetIterator = target()
-                .iterator();
-
-        @Override
-        public boolean hasNext() {
-            return targetIterator.hasNext();
-        }
-
-        @Override
-        public Entry<K, V> next() {
-            return targetIterator.next();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Read-Only Map.");
-        }
-    }
+public class SequentialMapImpl<K, V> extends MapView<K, V> {
 
     private static final long serialVersionUID = 0x600L; // Version.
 
-    public UnmodifiableMapImpl(MapService<K, V> target) {
+    public SequentialMapImpl(MapService<K, V> target) {
         super(target);
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Unmodifiable");
     }
 
     @Override
@@ -61,8 +36,8 @@ public class UnmodifiableMapImpl<K, V> extends MapView<K, V> {
     }
 
     @Override
-    public Iterator<Entry<K, V>> iterator() {
-        return new IteratorImpl();
+    public Iterator<java.util.Map.Entry<K, V>> iterator() {
+        return target().iterator();
     }
 
     @Override
@@ -71,18 +46,23 @@ public class UnmodifiableMapImpl<K, V> extends MapView<K, V> {
     }
 
     @Override
+    public void perform(Consumer<MapService<K, V>> action, MapService<K, V> view) {
+        action.accept(view); // Executes immediately.
+    }
+
+    @Override
     public V put(K key, V value) {
-        throw new UnsupportedOperationException("Unmodifiable");
+        return target().put(key, value);
     }
 
     @Override
     public V remove(Object key) {
-        throw new UnsupportedOperationException("Unmodifiable");
+        return target().remove(key);
     }
 
     @Override
-    public MapService<K, V> threadSafe() {
-        return this;
+    public void update(Consumer<MapService<K, V>> action, MapService<K, V> view) {
+        action.accept(view); // Executes immediately.
     }
 
     @Override
