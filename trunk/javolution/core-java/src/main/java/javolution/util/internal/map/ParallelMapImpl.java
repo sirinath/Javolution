@@ -6,65 +6,55 @@
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
-package javolution.util.internal.collection;
+package javolution.util.internal.map;
 
 import java.util.Iterator;
 
 import javolution.context.ConcurrentContext;
 import javolution.util.function.Consumer;
 import javolution.util.function.Equality;
-import javolution.util.service.CollectionService;
+import javolution.util.service.MapService;
 
 /**
- * A parallel view over a collection. 
+ * A parallel view over a map. 
  */
-public class ParallelCollectionImpl<E> extends CollectionView<E> {
+public class ParallelMapImpl<K, V> extends MapView<K, V> {
 
     private static final long serialVersionUID = 0x600L; // Version.
 
-    public ParallelCollectionImpl(CollectionService<E> target) {
+    public ParallelMapImpl(MapService<K, V> target) {
         super(target);
     }
 
     @Override
-    public boolean add(E e) {
-        return target().add(e);
+    public boolean containsKey(Object key) {
+        return target().containsKey(key);
     }
 
     @Override
-    public void clear() {
-        target().clear();
+    public V get(Object key) {
+        return target().get(key);
     }
 
     @Override
-    public Equality<? super E> comparator() {
-        return target().comparator();
-    }
-
-    @Override
-    public boolean contains(Object obj) {
-        return target().contains(obj);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return target().isEmpty();
-    }
-
-    @Override
-    public Iterator<E> iterator() {
+    public Iterator<java.util.Map.Entry<K, V>> iterator() {
         return target().iterator();
     }
 
     @Override
-    public void perform(final Consumer<CollectionService<E>> action,
-            CollectionService<E> view) {
+    public Equality<? super K> keyComparator() {
+        return target().keyComparator();
+    }
+
+    @Override
+    public void perform(final Consumer<MapService<K, V>> action,
+            MapService<K, V> view) {
         ConcurrentContext ctx = ConcurrentContext.enter();
         try {
             int concurrency = ctx.getConcurrency();
-            CollectionService<E>[] subViews = view.split(concurrency + 1);
+            MapService<K, V>[] subViews = view.split(concurrency + 1);
             for (int i = 1; i < subViews.length; i++) {
-                final CollectionService<E> subView = subViews[i];
+                final MapService<K, V> subView = subViews[i];
                 ctx.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -80,25 +70,25 @@ public class ParallelCollectionImpl<E> extends CollectionView<E> {
     }
 
     @Override
-    public boolean remove(Object obj) {
-        return target().remove(obj);
+    public V put(K key, V value) {
+        return target().put(key, value);
     }
 
     @Override
-    public int size() {
-        return target().size();
+    public V remove(Object key) {
+        return target().remove(key);
     }
 
     @Override
-    public void update(final Consumer<CollectionService<E>> action,
-            CollectionService<E> view) {
+    public void update(final Consumer<MapService<K, V>> action,
+            MapService<K, V> view) {
         ConcurrentContext ctx = ConcurrentContext.enter();
         try {
             int concurrency = ctx.getConcurrency();
-            CollectionService<E>[] subViews = view.threadSafe()
-                    .split(concurrency + 1);
+            MapService<K, V>[] subViews = view.threadSafe().split(
+                    concurrency + 1);
             for (int i = 1; i < subViews.length; i++) {
-                final CollectionService<E> subView = subViews[i];
+                final MapService<K, V> subView = subViews[i];
                 ctx.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -111,6 +101,11 @@ public class ParallelCollectionImpl<E> extends CollectionView<E> {
             // Any exception raised during parallel iterations will be re-raised here.                       
             ctx.exit();
         }
+    }
+
+    @Override
+    public Equality<? super V> valueComparator() {
+        return target().valueComparator();
     }
 
 }
